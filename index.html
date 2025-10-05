@@ -1,2 +1,434 @@
-<h1>欢迎来到Physics Corner！！！</h1>
-<h1>请将你觉得有趣的文章挂在这里，并附上描述与评论。</h1>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Corner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .upload-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .upload-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-btn:hover {
+            background-color: #45a049;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .description {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .submit-btn {
+            padding: 8px 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .submit-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        .files-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .file-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .file-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .file-description {
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .preview-btn {
+            padding: 6px 12px;
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            align-self: flex-start;
+        }
+        
+        .preview-btn:hover {
+            background-color: #e68900;
+        }
+        
+        .comments-section {
+            margin-top: 10px;
+        }
+        
+        .comment {
+            background-color: #f9f9f9;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .comment-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 10px;
+            resize: vertical;
+        }
+        
+        .comment-btn {
+            padding: 6px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        
+        .comment-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .preview-content {
+            background-color: white;
+            width: 90%;
+            height: 90%;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .preview-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .preview-frame {
+            flex: 1;
+            border: none;
+        }
+        
+        .no-files {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Physics Corner</h1>
+        <p>分享你所看到的有趣文章/探索他人的文章分享</p>
+    </header>
+    
+    <section class="upload-section">
+        <label for="fileInput" class="upload-btn">点击提交你所要分享的文章</label>
+        <input type="file" id="fileInput" accept=".pdf">
+        <textarea class="description" placeholder="请添加对文件的描述……"></textarea>
+        <button class="submit-btn">提交文件</button>
+    </section>
+    
+    <section class="files-container" id="filesContainer">
+        <!-- 文件卡片将在这里动态生成 -->
+        <div class="no-files">暂无文件，请上传第一个PDF文件</div>
+    </section>
+    
+    <div class="preview-modal" id="previewModal">
+        <div class="preview-content">
+            <div class="preview-header">
+                <h3 id="previewTitle">PDF预览</h3>
+                <button class="close-btn" id="closePreview">&times;</button>
+            </div>
+            <iframe class="preview-frame" id="previewFrame"></iframe>
+        </div>
+    </div>
+    
+    <script>
+        // 存储所有文件的数组
+        let files = JSON.parse(localStorage.getItem('pdfForumFiles')) || [];
+        
+        // DOM元素
+        const fileInput = document.getElementById('fileInput');
+        const descriptionInput = document.querySelector('.description');
+        const submitBtn = document.querySelector('.submit-btn');
+        const filesContainer = document.getElementById('filesContainer');
+        const previewModal = document.getElementById('previewModal');
+        const previewFrame = document.getElementById('previewFrame');
+        const closePreview = document.getElementById('closePreview');
+        const previewTitle = document.getElementById('previewTitle');
+        
+        // 初始化页面
+        function initPage() {
+            renderFiles();
+            
+            // 添加事件监听器
+            submitBtn.addEventListener('click', handleFileSubmit);
+            closePreview.addEventListener('click', () => {
+                previewModal.style.display = 'none';
+            });
+            
+            // 点击模态框外部关闭预览
+            previewModal.addEventListener('click', (e) => {
+                if (e.target === previewModal) {
+                    previewModal.style.display = 'none';
+                }
+            });
+        }
+        
+        // 处理文件提交
+        function handleFileSubmit() {
+            const file = fileInput.files[0];
+            const description = descriptionInput.value.trim();
+            
+            if (!file) {
+                alert('请选择一个PDF文件');
+                return;
+            }
+            
+            if (file.type !== 'application/pdf') {
+                alert('请上传PDF文件');
+                return;
+            }
+            
+            // 创建文件对象
+            const fileObj = {
+                id: Date.now(),
+                name: file.name,
+                description: description || '无描述',
+                comments: [],
+                file: file
+            };
+            
+            // 添加到文件数组
+            files.push(fileObj);
+            
+            // 保存到localStorage
+            localStorage.setItem('pdfForumFiles', JSON.stringify(files));
+            
+            // 重新渲染文件列表
+            renderFiles();
+            
+            // 重置表单
+            fileInput.value = '';
+            descriptionInput.value = '';
+        }
+        
+        // 渲染文件列表
+        function renderFiles() {
+            if (files.length === 0) {
+                filesContainer.innerHTML = '<div class="no-files">暂无文件，请上传第一个PDF文件</div>';
+                return;
+            }
+            
+            filesContainer.innerHTML = '';
+            
+            files.forEach(file => {
+                const fileCard = document.createElement('div');
+                fileCard.className = 'file-card';
+                fileCard.innerHTML = `
+                    <div class="file-header">
+                        <span class="file-name">${file.name}</span>
+                    </div>
+                    <div class="file-description">${file.description}</div>
+                    <button class="preview-btn" data-id="${file.id}">预览</button>
+                    <div class="comments-section">
+                        <h4>评论 (${file.comments.length})</h4>
+                        <div class="comments-list" id="comments-${file.id}">
+                            ${renderComments(file.comments)}
+                        </div>
+                        <textarea class="comment-input" placeholder="添加评论..." id="comment-input-${file.id}"></textarea>
+                        <button class="comment-btn" data-id="${file.id}">发表评论</button>
+                    </div>
+                `;
+                
+                filesContainer.appendChild(fileCard);
+            });
+            
+            // 添加预览按钮事件
+            document.querySelectorAll('.preview-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const fileId = parseInt(e.target.getAttribute('data-id'));
+                    previewFile(fileId);
+                });
+            });
+            
+            // 添加评论按钮事件
+            document.querySelectorAll('.comment-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const fileId = parseInt(e.target.getAttribute('data-id'));
+                    addComment(fileId);
+                });
+            });
+        }
+        
+        // 渲染评论列表
+        function renderComments(comments) {
+            if (comments.length === 0) {
+                return '<div class="comment">暂无评论</div>';
+            }
+            
+            return comments.map(comment => 
+                `<div class="comment"><strong>${comment.author}:</strong> ${comment.text}</div>`
+            ).join('');
+        }
+        
+        // 预览文件
+        function previewFile(fileId) {
+            const file = files.find(f => f.id === fileId);
+            if (!file) return;
+            
+            previewTitle.textContent = `预览: ${file.name}`;
+            
+            // 创建对象URL用于预览
+            const fileURL = URL.createObjectURL(file.file);
+            previewFrame.src = fileURL;
+            
+            previewModal.style.display = 'flex';
+        }
+        
+        // 添加评论
+        function addComment(fileId) {
+            const file = files.find(f => f.id === fileId);
+            if (!file) return;
+            
+            const commentInput = document.getElementById(`comment-input-${fileId}`);
+            const commentText = commentInput.value.trim();
+            
+            if (!commentText) {
+                alert('请输入评论内容');
+                return;
+            }
+            
+            // 创建评论对象
+            const comment = {
+                id: Date.now(),
+                author: '用户' + Math.floor(Math.random() * 1000), // 模拟随机用户
+                text: commentText,
+                timestamp: new Date().toLocaleString()
+            };
+            
+            // 添加到文件的评论数组
+            file.comments.push(comment);
+            
+            // 保存到localStorage
+            localStorage.setItem('pdfForumFiles', JSON.stringify(files));
+            
+            // 更新评论列表
+            const commentsList = document.getElementById(`comments-${fileId}`);
+            commentsList.innerHTML = renderComments(file.comments);
+            
+            // 清空评论输入框
+            commentInput.value = '';
+        }
+        
+        // 初始化页面
+        initPage();
+    </script>
+</body>
+</html>
