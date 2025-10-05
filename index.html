@@ -3,22 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF论坛 - Supabase共享版</title>
+    <title>PDF论坛</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-color: #f5f5f5;
             padding: 20px;
-            min-height: 100vh;
-        }
-        
-        .container {
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -26,69 +22,39 @@
         header {
             text-align: center;
             margin-bottom: 30px;
-            padding: 30px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         h1 {
-            color: #2c3e50;
+            color: #333;
             margin-bottom: 10px;
-            font-size: 2.5rem;
-        }
-        
-        .subtitle {
-            color: #7f8c8d;
-            font-size: 1.1rem;
         }
         
         .upload-section {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        
-        .upload-area {
-            border: 2px dashed #3498db;
+            background-color: white;
+            padding: 20px;
             border-radius: 8px;
-            padding: 30px;
-            text-align: center;
-            margin-bottom: 20px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        
-        .upload-area:hover {
-            background-color: #f8fafc;
-            border-color: #2980b9;
-        }
-        
-        .upload-icon {
-            font-size: 48px;
-            color: #3498db;
-            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
         }
         
         .upload-btn {
             display: inline-block;
-            padding: 12px 30px;
-            background: linear-gradient(to right, #3498db, #2980b9);
+            padding: 10px 20px;
+            background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11);
+            margin-bottom: 15px;
         }
         
         .upload-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1);
+            background-color: #45a049;
         }
         
         #fileInput {
@@ -97,169 +63,126 @@
         
         .description {
             width: 100%;
-            padding: 15px;
-            margin-top: 15px;
+            padding: 10px;
+            margin-top: 10px;
             border: 1px solid #ddd;
-            border-radius: 6px;
+            border-radius: 4px;
             resize: vertical;
-            min-height: 100px;
-            font-size: 16px;
-            transition: border 0.3s;
-        }
-        
-        .description:focus {
-            border-color: #3498db;
-            outline: none;
+            min-height: 80px;
         }
         
         .submit-btn {
-            padding: 12px 30px;
-            background: linear-gradient(to right, #2ecc71, #27ae60);
+            padding: 8px 16px;
+            background-color: #2196F3;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            margin-top: 15px;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11);
+            margin-top: 10px;
         }
         
         .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1);
+            background-color: #0b7dda;
         }
         
         .files-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
         }
         
         .file-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s;
-        }
-        
-        .file-card:hover {
-            transform: translateY(-5px);
         }
         
         .file-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
             border-bottom: 1px solid #eee;
         }
         
         .file-name {
             font-weight: bold;
-            color: #2c3e50;
-            font-size: 1.1rem;
+            color: #333;
         }
         
         .file-description {
-            margin-bottom: 20px;
-            color: #7f8c8d;
-            font-size: 15px;
-            line-height: 1.5;
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 14px;
         }
         
         .file-actions {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .preview-btn, .download-btn {
-            padding: 10px 20px;
+            padding: 6px 12px;
+            color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
         }
         
         .preview-btn {
-            background: linear-gradient(to right, #e67e22, #d35400);
-            color: white;
+            background-color: #FF9800;
+        }
+        
+        .preview-btn:hover {
+            background-color: #e68900;
         }
         
         .download-btn {
-            background: linear-gradient(to right, #9b59b6, #8e44ad);
-            color: white;
+            background-color: #9C27B0;
         }
         
-        .preview-btn:hover, .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        .download-btn:hover {
+            background-color: #7b1fa2;
         }
         
         .comments-section {
-            margin-top: 15px;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-        }
-        
-        .comments-title {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            color: #2c3e50;
+            margin-top: 10px;
         }
         
         .comment {
-            background-color: #f8f9fa;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 12px;
+            background-color: #f9f9f9;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
             font-size: 14px;
-            border-left: 4px solid #3498db;
-        }
-        
-        .comment-author {
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-        
-        .comment-text {
-            color: #555;
-            line-height: 1.4;
         }
         
         .comment-input {
             width: 100%;
-            padding: 12px;
+            padding: 8px;
             border: 1px solid #ddd;
-            border-radius: 6px;
+            border-radius: 4px;
             margin-top: 10px;
             resize: vertical;
-            font-size: 15px;
         }
         
         .comment-btn {
-            padding: 10px 20px;
-            background: linear-gradient(to right, #3498db, #2980b9);
+            padding: 6px 12px;
+            background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            margin-top: 10px;
-            font-weight: 600;
-            transition: all 0.3s;
+            margin-top: 5px;
         }
         
         .comment-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background-color: #45a049;
         }
         
         .preview-modal {
@@ -269,7 +192,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.8);
+            background-color: rgba(0,0,0,0.7);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -279,32 +202,25 @@
             background-color: white;
             width: 90%;
             height: 90%;
-            border-radius: 12px;
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
         
         .preview-header {
-            padding: 20px;
+            padding: 15px;
             border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #f8f9fa;
         }
         
         .close-btn {
             background: none;
             border: none;
-            font-size: 28px;
+            font-size: 24px;
             cursor: pointer;
-            color: #7f8c8d;
-            transition: color 0.3s;
-        }
-        
-        .close-btn:hover {
-            color: #e74c3c;
+            color: #666;
         }
         
         .preview-frame {
@@ -314,89 +230,54 @@
         
         .no-files {
             text-align: center;
-            color: #7f8c8d;
-            padding: 60px 20px;
+            color: #666;
+            padding: 40px;
             grid-column: 1 / -1;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .no-files-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            color: #bdc3c7;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #7f8c8d;
         }
         
         .status-message {
-            padding: 12px;
-            border-radius: 6px;
+            padding: 10px;
+            border-radius: 4px;
             margin: 10px 0;
             text-align: center;
-            font-weight: 500;
         }
         
         .success {
             background-color: #d4edda;
             color: #155724;
-            border: 1px solid #c3e6cb;
         }
         
         .error {
             background-color: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        @media (max-width: 768px) {
-            .files-container {
-                grid-template-columns: 1fr;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>PDF论坛 - 完整共享版</h1>
-            <p class="subtitle">上传、预览、下载和讨论PDF文档 - 基于Supabase</p>
-        </header>
-        
-        <section class="upload-section">
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">📄</div>
-                <h3>拖放PDF文件或点击上传</h3>
-                <p>支持单个PDF文件上传，所有用户都可查看和下载</p>
-                <label for="fileInput" class="upload-btn">选择PDF文件</label>
-                <input type="file" id="fileInput" accept=".pdf">
+    <header>
+        <h1>PDF论坛</h1>
+        <p>上传、预览和讨论PDF文档</p>
+    </header>
+    
+    <section class="upload-section">
+        <label for="fileInput" class="upload-btn">请提交PDF文件</label>
+        <input type="file" id="fileInput" accept=".pdf">
+        <textarea class="description" placeholder="添加文件描述..."></textarea>
+        <button class="submit-btn">提交文件</button>
+        <div id="statusMessage"></div>
+    </section>
+    
+    <section class="files-container" id="filesContainer">
+        <div class="no-files">正在加载文件...</div>
+    </section>
+    
+    <div class="preview-modal" id="previewModal">
+        <div class="preview-content">
+            <div class="preview-header">
+                <h3 id="previewTitle">PDF预览</h3>
+                <button class="close-btn" id="closePreview">&times;</button>
             </div>
-            <textarea class="description" placeholder="添加文件描述..."></textarea>
-            <button class="submit-btn">提交文件</button>
-            <div id="statusMessage"></div>
-        </section>
-        
-        <section class="files-container" id="filesContainer">
-            <div class="loading">正在加载文件...</div>
-        </section>
-        
-        <div class="preview-modal" id="previewModal">
-            <div class="preview-content">
-                <div class="preview-header">
-                    <h3 id="previewTitle">PDF预览</h3>
-                    <button class="close-btn" id="closePreview">&times;</button>
-                </div>
-                <iframe class="preview-frame" id="previewFrame"></iframe>
-            </div>
+            <iframe class="preview-frame" id="previewFrame"></iframe>
         </div>
     </div>
 
@@ -410,7 +291,6 @@
 
         // DOM元素
         const fileInput = document.getElementById('fileInput');
-        const uploadArea = document.getElementById('uploadArea');
         const descriptionInput = document.querySelector('.description');
         const submitBtn = document.querySelector('.submit-btn');
         const filesContainer = document.getElementById('filesContainer');
@@ -423,11 +303,8 @@
         // 初始化页面
         async function initPage() {
             await loadFiles();
-            
-            // 设置实时订阅
             setupRealtimeSubscription();
             
-            // 事件监听器
             submitBtn.addEventListener('click', handleFileSubmit);
             closePreview.addEventListener('click', () => {
                 previewModal.style.display = 'none';
@@ -436,32 +313,6 @@
             previewModal.addEventListener('click', (e) => {
                 if (e.target === previewModal) {
                     previewModal.style.display = 'none';
-                }
-            });
-            
-            // 拖放功能
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.style.backgroundColor = '#f0f8ff';
-            });
-            
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.style.backgroundColor = '';
-            });
-            
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.style.backgroundColor = '';
-                
-                if (e.dataTransfer.files.length) {
-                    fileInput.files = e.dataTransfer.files;
-                    showStatus('文件已选择: ' + e.dataTransfer.files[0].name, 'success');
-                }
-            });
-            
-            fileInput.addEventListener('change', () => {
-                if (fileInput.files.length) {
-                    showStatus('文件已选择: ' + fileInput.files[0].name, 'success');
                 }
             });
         }
@@ -473,31 +324,25 @@
             setTimeout(() => {
                 statusMessage.textContent = '';
                 statusMessage.className = '';
-            }, 5000);
+            }, 4000);
         }
 
         // 上传文件到Supabase Storage
         async function uploadFileToStorage(file) {
-            try {
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
-                
-                const { data, error } = await supabase.storage
-                    .from('pdf-files')
-                    .upload(fileName, file);
-                
-                if (error) throw error;
-                
-                // 获取公开URL
-                const { data: { publicUrl } } = supabase.storage
-                    .from('pdf-files')
-                    .getPublicUrl(fileName);
-                
-                return publicUrl;
-            } catch (error) {
-                console.error('文件上传失败:', error);
-                throw error;
-            }
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+            
+            const { data, error } = await supabase.storage
+                .from('pdf-files')
+                .upload(fileName, file);
+            
+            if (error) throw error;
+            
+            const { data: { publicUrl } } = supabase.storage
+                .from('pdf-files')
+                .getPublicUrl(fileName);
+            
+            return publicUrl;
         }
 
         // 处理文件提交
@@ -518,19 +363,16 @@
             try {
                 showStatus('正在上传文件...', 'success');
                 
-                // 1. 上传文件到Storage
                 const fileUrl = await uploadFileToStorage(file);
                 
-                // 2. 保存文件信息到数据库
-                const { data, error } = await supabase
+                const { error } = await supabase
                     .from('pdf_files')
                     .insert([{
                         name: file.name,
                         description: description || '无描述',
                         file_url: fileUrl,
                         uploader: '用户' + Math.floor(Math.random() * 1000)
-                    }])
-                    .select();
+                    }]);
                 
                 if (error) throw error;
                 
@@ -540,7 +382,7 @@
                 
             } catch (error) {
                 console.error('上传失败:', error);
-                showStatus('上传失败: ' + error.message, 'error');
+                showStatus('上传失败', 'error');
             }
         }
 
@@ -554,7 +396,6 @@
                 
                 if (error) throw error;
                 
-                // 为每个文件加载评论
                 const filesWithComments = await Promise.all(
                     (files || []).map(async (file) => {
                         const { data: comments } = await supabase
@@ -574,31 +415,25 @@
                 
             } catch (error) {
                 console.error('加载文件失败:', error);
-                filesContainer.innerHTML = '<div class="no-files">加载文件失败，请刷新页面重试</div>';
+                filesContainer.innerHTML = '<div class="no-files">加载文件失败</div>';
             }
         }
 
         // 设置实时订阅
         function setupRealtimeSubscription() {
-            // 监听文件表变化
             supabase
                 .channel('pdf_files_changes')
                 .on('postgres_changes', 
                     { event: '*', schema: 'public', table: 'pdf_files' }, 
-                    () => {
-                        loadFiles(); // 重新加载文件
-                    }
+                    () => loadFiles()
                 )
                 .subscribe();
             
-            // 监听评论表变化
             supabase
                 .channel('pdf_comments_changes')
                 .on('postgres_changes', 
                     { event: '*', schema: 'public', table: 'pdf_comments' }, 
-                    () => {
-                        loadFiles(); // 重新加载文件（包含评论）
-                    }
+                    () => loadFiles()
                 )
                 .subscribe();
         }
@@ -606,13 +441,7 @@
         // 渲染文件列表
         function renderFiles(files) {
             if (!files || files.length === 0) {
-                filesContainer.innerHTML = `
-                    <div class="no-files">
-                        <div class="no-files-icon">📚</div>
-                        <h3>暂无共享文件</h3>
-                        <p>上传第一个PDF文件开始讨论吧！</p>
-                    </div>
-                `;
+                filesContainer.innerHTML = '<div class="no-files">暂无文件，请上传第一个PDF文件</div>';
                 return;
             }
             
@@ -627,15 +456,12 @@
                         <small style="color: #666;">by ${file.uploader}</small>
                     </div>
                     <div class="file-description">${file.description}</div>
-                    <div style="font-size: 12px; color: #888; margin-bottom: 15px;">
-                        上传时间: ${new Date(file.created_at).toLocaleString()}
-                    </div>
                     <div class="file-actions">
-                        <button class="preview-btn" data-url="${file.file_url}" data-name="${file.name}">预览PDF</button>
-                        <button class="download-btn" data-url="${file.file_url}" data-name="${file.name}">下载PDF</button>
+                        <button class="preview-btn" data-url="${file.file_url}" data-name="${file.name}">预览</button>
+                        <button class="download-btn" data-url="${file.file_url}" data-name="${file.name}">下载</button>
                     </div>
                     <div class="comments-section">
-                        <h4 class="comments-title">评论 (${file.comments.length})</h4>
+                        <h4>评论 (${file.comments.length})</h4>
                         <div class="comments-list" id="comments-${file.id}">
                             ${renderComments(file.comments)}
                         </div>
@@ -647,7 +473,6 @@
                 filesContainer.appendChild(fileCard);
             });
             
-            // 绑定预览按钮事件
             document.querySelectorAll('.preview-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const fileUrl = e.target.getAttribute('data-url');
@@ -656,7 +481,6 @@
                 });
             });
             
-            // 绑定下载按钮事件
             document.querySelectorAll('.download-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const fileUrl = e.target.getAttribute('data-url');
@@ -665,7 +489,6 @@
                 });
             });
             
-            // 绑定评论按钮事件
             document.querySelectorAll('.comment-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const fileId = e.target.getAttribute('data-id');
@@ -677,17 +500,11 @@
         // 渲染评论列表
         function renderComments(comments) {
             if (comments.length === 0) {
-                return '<div class="comment">暂无评论，成为第一个评论者吧！</div>';
+                return '<div class="comment">暂无评论</div>';
             }
             
             return comments.map(comment => 
-                `<div class="comment">
-                    <div class="comment-author">${comment.author}</div>
-                    <div class="comment-text">${comment.content}</div>
-                    <div style="font-size: 12px; color: #888; margin-top: 5px;">
-                        ${new Date(comment.created_at).toLocaleString()}
-                    </div>
-                </div>`
+                `<div class="comment"><strong>${comment.author}:</strong> ${comment.content}</div>`
             ).join('');
         }
 
@@ -704,7 +521,6 @@
             link.href = fileUrl;
             link.download = fileName;
             link.click();
-            showStatus('文件下载开始', 'success');
         }
 
         // 添加评论
@@ -733,7 +549,7 @@
                 
             } catch (error) {
                 console.error('发表评论失败:', error);
-                showStatus('发表评论失败: ' + error.message, 'error');
+                showStatus('发表评论失败', 'error');
             }
         }
 
