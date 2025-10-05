@@ -268,7 +268,7 @@
     </section>
     
     <section class="files-container" id="filesContainer">
-        <div class="no-files">正在加载文件...</div>
+        <div class="no-files">请上传文件...</div>
     </section>
     
     <div class="preview-modal" id="previewModal">
@@ -284,277 +284,292 @@
     <!-- 引入 Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Supabase配置 - 替换为您的实际配置
-        const supabaseUrl = 'https://nvakaqgfdcdbaeiyutqq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52YWthcWdmZGNkYmFlaXl1dHFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NTg5NDAsImV4cCI6MjA3NTIzNDk0MH0.VetnkjVe-XhmFf3n7TJHmpoE6l_YP_XvR1B2hamLZqs';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        // 等待页面加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 配置信息
+            const supabaseUrl = 'https://nvakaagfdcdbaelyutqq.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52YWthYWdmZGNkYmFlbHl1dHFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NTg5NDAsImV4cCI6MjA3NTIzNDk0MH0.VetnkjVe-XhmFF3n7TJHmpoE6LYP_XvRIB2hamLZqs';
 
-        // DOM元素
-        const fileInput = document.getElementById('fileInput');
-        const descriptionInput = document.querySelector('.description');
-        const submitBtn = document.querySelector('.submit-btn');
-        const filesContainer = document.getElementById('filesContainer');
-        const previewModal = document.getElementById('previewModal');
-        const previewFrame = document.getElementById('previewFrame');
-        const closePreview = document.getElementById('closePreview');
-        const previewTitle = document.getElementById('previewTitle');
-        const statusMessage = document.getElementById('statusMessage');
+            console.log('配置检查 - URL:', supabaseUrl);
+            console.log('配置检查 - Key长度:', supabaseKey?.length);
 
-        // 初始化页面
-        async function initPage() {
-            await loadFiles();
-            setupRealtimeSubscription();
-            
-            submitBtn.addEventListener('click', handleFileSubmit);
-            closePreview.addEventListener('click', () => {
-                previewModal.style.display = 'none';
-            });
-            
-            previewModal.addEventListener('click', (e) => {
-                if (e.target === previewModal) {
-                    previewModal.style.display = 'none';
+            // 创建Supabase客户端
+            let supabase;
+            try {
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                console.log('✅ Supabase客户端初始化成功');
+            } catch (error) {
+                console.error('❌ Supabase客户端初始化失败:', error);
+                return;
+            }
+
+            // DOM元素
+            const fileInput = document.getElementById('fileInput');
+            const descriptionInput = document.querySelector('.description');
+            const submitBtn = document.querySelector('.submit-btn');
+            const filesContainer = document.getElementById('filesContainer');
+            const previewModal = document.getElementById('previewModal');
+            const previewFrame = document.getElementById('previewFrame');
+            const closePreview = document.getElementById('closePreview');
+            const previewTitle = document.getElementById('previewTitle');
+            const statusMessage = document.getElementById('statusMessage');
+
+            // 显示状态消息
+            function showStatus(message, type) {
+                statusMessage.textContent = message;
+                statusMessage.className = 'status-message ' + type;
+                setTimeout(() => {
+                    statusMessage.textContent = '';
+                    statusMessage.className = '';
+                }, 4000);
+            }
+
+            // 上传文件到Supabase Storage
+            async function uploadFileToStorage(file) {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+                
+                const { data, error } = await supabase.storage
+                    .from('pdf-files')
+                    .upload(fileName, file);
+                
+                if (error) throw error;
+                
+                const { data: { publicUrl } } = supabase.storage
+                    .from('pdf-files')
+                    .getPublicUrl(fileName);
+                
+                return publicUrl;
+            }
+
+            // 处理文件提交
+            async function handleFileSubmit() {
+                const file = fileInput.files[0];
+                const description = descriptionInput.value.trim();
+                
+                if (!file) {
+                    showStatus('请选择一个PDF文件', 'error');
+                    return;
                 }
-            });
-        }
-
-        // 显示状态消息
-        function showStatus(message, type) {
-            statusMessage.textContent = message;
-            statusMessage.className = 'status-message ' + type;
-            setTimeout(() => {
-                statusMessage.textContent = '';
-                statusMessage.className = '';
-            }, 4000);
-        }
-
-        // 上传文件到Supabase Storage
-        async function uploadFileToStorage(file) {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
-            
-            const { data, error } = await supabase.storage
-                .from('pdf-files')
-                .upload(fileName, file);
-            
-            if (error) throw error;
-            
-            const { data: { publicUrl } } = supabase.storage
-                .from('pdf-files')
-                .getPublicUrl(fileName);
-            
-            return publicUrl;
-        }
-
-        // 处理文件提交
-        async function handleFileSubmit() {
-            const file = fileInput.files[0];
-            const description = descriptionInput.value.trim();
-            
-            if (!file) {
-                showStatus('请选择一个PDF文件', 'error');
-                return;
+                
+                if (file.type !== 'application/pdf') {
+                    showStatus('请上传PDF文件', 'error');
+                    return;
+                }
+                
+                try {
+                    showStatus('正在上传文件...','success');
+                    
+                    const fileUrl = await uploadFileToStorage(file);
+                    
+                    const { error } = await supabase
+                        .from('pdf_files')
+                        .insert([{
+                            name: file.name,
+                            description: description || '无描述',
+                            file_url: fileUrl,
+                            uploader: '用户' + Math.floor(Math.random() * 1000)
+                        }]);
+                    
+                    if (error) throw error;
+                    
+                    showStatus('文件上传成功！', 'success');
+                    fileInput.value = '';
+                    descriptionInput.value = '';
+                    
+                } catch (error) {
+                    console.error('上传失败:', error);
+                    showStatus('上传失败', 'error');
+                }
             }
-            
-            if (file.type !== 'application/pdf') {
-                showStatus('请上传PDF文件', 'error');
-                return;
-            }
-            
-            try {
-                showStatus('正在上传文件...', 'success');
-                
-                const fileUrl = await uploadFileToStorage(file);
-                
-                const { error } = await supabase
-                    .from('pdf_files')
-                    .insert([{
-                        name: file.name,
-                        description: description || '无描述',
-                        file_url: fileUrl,
-                        uploader: '用户' + Math.floor(Math.random() * 1000)
-                    }]);
-                
-                if (error) throw error;
-                
-                showStatus('文件上传成功！', 'success');
-                fileInput.value = '';
-                descriptionInput.value = '';
-                
-            } catch (error) {
-                console.error('上传失败:', error);
-                showStatus('上传失败', 'error');
-            }
-        }
 
-        // 加载所有文件
-        async function loadFiles() {
-            try {
-                const { data: files, error } = await supabase
-                    .from('pdf_files')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                const filesWithComments = await Promise.all(
-                    (files || []).map(async (file) => {
-                        const { data: comments } = await supabase
-                            .from('pdf_comments')
-                            .select('*')
-                            .eq('file_id', file.id)
-                            .order('created_at', { ascending: true });
-                        
-                        return {
-                            ...file,
-                            comments: comments || []
-                        };
-                    })
-                );
-                
-                renderFiles(filesWithComments);
-                
-            } catch (error) {
-                console.error('加载文件失败:', error);
-                filesContainer.innerHTML = '<div class="no-files">加载文件失败</div>';
+            // 加载所有文件
+            async function loadFiles() {
+                try {
+                    const { data: files, error } = await supabase
+                        .from('pdf_files')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) throw error;
+                    
+                    const filesWithComments = await Promise.all(
+                        (files || []).map(async (file) => {
+                            const { data: comments } = await supabase
+                                .from('pdf_comments')
+                                .select('*')
+                                .eq('file_id', file.id)
+                                .order('created_at', { ascending: true });
+                            
+                            return {
+                                ...file,
+                                comments: comments || []
+                            };
+                        })
+                    );
+                    
+                    renderFiles(filesWithComments);
+                    
+                } catch (error) {
+                    console.error('加载文件失败:', error);
+                    filesContainer.innerHTML = '<div class="no-files">加载文件失败</div>';
+                }
             }
-        }
 
-        // 设置实时订阅
-        function setupRealtimeSubscription() {
-            supabase
-                .channel('pdf_files_changes')
-                .on('postgres_changes', 
-                    { event: '*', schema: 'public', table: 'pdf_files' }, 
-                    () => loadFiles()
-                )
-                .subscribe();
-            
-            supabase
-                .channel('pdf_comments_changes')
-                .on('postgres_changes', 
-                    { event: '*', schema: 'public', table: 'pdf_comments' }, 
-                    () => loadFiles()
-                )
-                .subscribe();
-        }
-
-        // 渲染文件列表
-        function renderFiles(files) {
-            if (!files || files.length === 0) {
-                filesContainer.innerHTML = '<div class="no-files">暂无文件，请上传第一个PDF文件</div>';
-                return;
+            // 设置实时订阅
+            function setupRealtimeSubscription() {
+                supabase
+                    .channel('pdf_files_changes')
+                    .on('postgres_changes', 
+                        { event: '*', schema: 'public', table: 'pdf_files' }, 
+                        () => loadFiles()
+                    )
+                    .subscribe();
+                
+                supabase
+                    .channel('pdf_comments_changes')
+                    .on('postgres_changes', 
+                        { event: '*', schema: 'public', table: 'pdf_comments' }, 
+                        () => loadFiles()
+                    )
+                    .subscribe();
             }
-            
-            filesContainer.innerHTML = '';
-            
-            files.forEach(file => {
-                const fileCard = document.createElement('div');
-                fileCard.className = 'file-card';
-                fileCard.innerHTML = `
-                    <div class="file-header">
-                        <span class="file-name">${file.name}</span>
-                        <small style="color: #666;">by ${file.uploader}</small>
-                    </div>
-                    <div class="file-description">${file.description}</div>
-                    <div class="file-actions">
-                        <button class="preview-btn" data-url="${file.file_url}" data-name="${file.name}">预览</button>
-                        <button class="download-btn" data-url="${file.file_url}" data-name="${file.name}">下载</button>
-                    </div>
-                    <div class="comments-section">
-                        <h4>评论 (${file.comments.length})</h4>
-                        <div class="comments-list" id="comments-${file.id}">
-                            ${renderComments(file.comments)}
+
+            // 渲染文件列表
+            function renderFiles(files) {
+                if (!files || files.length === 0) {
+                    filesContainer.innerHTML = '<div class="no-files">暂无文件，请上传第一个PDF文件</div>';
+                    return;
+                }
+                
+                filesContainer.innerHTML = '';
+                
+                files.forEach(file => {
+                    const fileCard = document.createElement('div');
+                    fileCard.className = 'file-card';
+                    fileCard.innerHTML = `
+                        <div class="file-header">
+                            <span class="file-name">${file.name}</span>
+                            <small style="color: #666;">by ${file.uploader}</small>
                         </div>
-                        <textarea class="comment-input" placeholder="添加评论..." id="comment-input-${file.id}"></textarea>
-                        <button class="comment-btn" data-id="${file.id}">发表评论</button>
-                    </div>
-                `;
-                
-                filesContainer.appendChild(fileCard);
-            });
-            
-            document.querySelectorAll('.preview-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const fileUrl = e.target.getAttribute('data-url');
-                    const fileName = e.target.getAttribute('data-name');
-                    previewFile(fileUrl, fileName);
+                        <div class="file-description">${file.description}</div>
+                        <div class="file-actions">
+                            <button class="preview-btn" data-url="${file.file_url}" data-name="${file.name}">预览</button>
+                            <button class="download-btn" data-url="${file.file_url}" data-name="${file.name}">下载</button>
+                        </div>
+                        <div class="comments-section">
+                            <h4>评论 (${file.comments.length})</h4>
+                            <div class="comments-list" id="comments-${file.id}">
+                                ${renderComments(file.comments)}
+                            </div>
+                            <textarea class="comment-input" placeholder="添加评论..." id="comment-input-${file.id}"></textarea>
+                            <button class="comment-btn" data-id="${file.id}">发表评论</button>
+                        </div>
+                    `;
+                    
+                    filesContainer.appendChild(fileCard);
                 });
-            });
-            
-            document.querySelectorAll('.download-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const fileUrl = e.target.getAttribute('data-url');
-                    const fileName = e.target.getAttribute('data-name');
-                    downloadFile(fileUrl, fileName);
+                
+                document.querySelectorAll('.preview-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const fileUrl = e.target.getAttribute('data-url');
+                        const fileName = e.target.getAttribute('data-name');
+                        previewFile(fileUrl, fileName);
+                    });
                 });
-            });
-            
-            document.querySelectorAll('.comment-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const fileId = e.target.getAttribute('data-id');
-                    addComment(fileId);
+                
+                document.querySelectorAll('.download-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const fileUrl = e.target.getAttribute('data-url');
+                        const fileName = e.target.getAttribute('data-name');
+                        downloadFile(fileUrl, fileName);
+                    });
                 });
-            });
-        }
-
-        // 渲染评论列表
-        function renderComments(comments) {
-            if (comments.length === 0) {
-                return '<div class="comment">暂无评论</div>';
-            }
-            
-            return comments.map(comment => 
-                `<div class="comment"><strong>${comment.author}:</strong> ${comment.content}</div>`
-            ).join('');
-        }
-
-        // 预览文件
-        function previewFile(fileUrl, fileName) {
-            previewTitle.textContent = `预览: ${fileName}`;
-            previewFrame.src = fileUrl;
-            previewModal.style.display = 'flex';
-        }
-
-        // 下载文件
-        function downloadFile(fileUrl, fileName) {
-            const link = document.createElement('a');
-            link.href = fileUrl;
-            link.download = fileName;
-            link.click();
-        }
-
-        // 添加评论
-        async function addComment(fileId) {
-            const commentInput = document.getElementById(`comment-input-${fileId}`);
-            const commentText = commentInput.value.trim();
-            
-            if (!commentText) {
-                showStatus('请输入评论内容', 'error');
-                return;
-            }
-            
-            try {
-                const { error } = await supabase
-                    .from('pdf_comments')
-                    .insert([{
-                        file_id: fileId,
-                        author: '用户' + Math.floor(Math.random() * 1000),
-                        content: commentText
-                    }]);
                 
-                if (error) throw error;
-                
-                commentInput.value = '';
-                showStatus('评论发表成功！', 'success');
-                
-            } catch (error) {
-                console.error('发表评论失败:', error);
-                showStatus('发表评论失败', 'error');
+                document.querySelectorAll('.comment-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const fileId = e.target.getAttribute('data-id');
+                        addComment(fileId);
+                    });
+                });
             }
-        }
 
-        // 初始化页面
-        initPage();
+            // 渲染评论列表
+            function renderComments(comments) {
+                if (comments.length === 0) {
+                    return '<div class="comment">暂无评论</div>';
+                }
+                
+                return comments.map(comment => 
+                    `<div class="comment"><strong>${comment.author}:</strong> ${comment.content}</div>`
+                ).join('');
+            }
+
+            // 预览文件
+            function previewFile(fileUrl, fileName) {
+                previewTitle.textContent = `预览: ${fileName}`;
+                previewFrame.src = fileUrl;
+                previewModal.style.display = 'flex';
+            }
+
+            // 下载文件
+            function downloadFile(fileUrl, fileName) {
+                const link = document.createElement('a');
+                link.href = fileUrl;
+                link.download = fileName;
+                link.click();
+            }
+
+            // 添加评论
+            async function addComment(fileId) {
+                const commentInput = document.getElementById(`comment-input-${fileId}`);
+                const commentText = commentInput.value.trim();
+                
+                if (!commentText) {
+                    showStatus('请输入评论内容', 'error');
+                    return;
+                }
+                
+                try {
+                    const { error } = await supabase
+                        .from('pdf_comments')
+                        .insert([{
+                            file_id: fileId,
+                            author: '用户' + Math.floor(Math.random() * 1000),
+                            content: commentText
+                        }]);
+                    
+                    if (error) throw error;
+                    
+                    commentInput.value = '';
+                    showStatus('评论发表成功！', 'success');
+                    
+                } catch (error) {
+                    console.error('发表评论失败:', error);
+                    showStatus('发表评论失败', 'error');
+                }
+            }
+
+            // 初始化页面
+            async function initPage() {
+                await loadFiles();
+                setupRealtimeSubscription();
+                
+                submitBtn.addEventListener('click', handleFileSubmit);
+                closePreview.addEventListener('click', () => {
+                    previewModal.style.display = 'none';
+                });
+                
+                previewModal.addEventListener('click', (e) => {
+                    if (e.target === previewModal) {
+                        previewModal.style.display = 'none';
+                    }
+                });
+            }
+
+            // 初始化页面
+            initPage();
+        }); // DOMContentLoaded 结束
     </script>
 </body>
 </html>
